@@ -9,7 +9,10 @@ Free:
 - OpenRouter's model list and Civitai's newest checkpoints: new model names;
 - the App Store's top-grossing apps per genre (Apple's RSS; the legacy feed, which has grossing
   and genres, first, the marketing-tools one when it fails);
-- new entries in awesome lists on GitHub (`awesome`: raw README URLs).
+- new entries in awesome lists on GitHub (`awesome`: raw README URLs);
+- `suggest`: the root-word method without a key. For each seed, Google's autocomplete for the seed
+  and the seed followed by a to z; a suggestion it did not give before is a new way people search
+  next to the root ("ai christmas photo trend"). 27 requests a seed, a third of a second apart.
 
 Paid, small:
 - `google_new`: pages Google indexed in the last week under a path (DataForSEO through AIsa, about
@@ -28,6 +31,7 @@ import html
 import json
 import re
 import time
+import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timezone
@@ -42,7 +46,10 @@ SERP = "post_dataforseo_serp_google_organic_live_regular"
 TOOLISH = re.compile(r"(?<![a-z])(ai|app|tool|generator|filter|effect|template|prompt|editor|maker|bot|gpt|agent|plugin|extension|"
                      r"converter|translator|avatar)s?(?![a-z])|特效|模板|滤镜|工具|生成|剪辑|一键|智能|插件", re.I)
 LABEL = {"producthunt": "Product Hunt", "hn": "Show HN", "openrouter": "OpenRouter", "civitai": "Civitai", "appstore": "App Store",
-         "awesome": "awesome list", "google_new": "Google, new this week", "trending": "trending", "rising": "rising with"}
+         "awesome": "awesome list", "google_new": "Google, new this week", "trending": "trending", "rising": "rising with",
+         "suggest": "Google autocomplete"}
+SUGGEST = "https://suggestqueries.google.com/complete/search?client=firefox&hl=en&gl=us&q="
+SUGGEST_PAUSE = 0.35
 
 
 def get(url: str) -> bytes:
@@ -186,8 +193,32 @@ def rising(c: dict) -> tuple[list[dict], int]:
     return out, cost
 
 
+def suggest(c: dict) -> tuple[list[dict], int]:
+    """Google's autocomplete next to each root word, free: the seed alone and the seed plus each letter. A snapshot
+    of yesterday's suggestions makes a suggestion new; one that drops the seed's word is someone else's search."""
+    out, asked, failed = {}, 0, 0
+    for seed in c["seeds"]:
+        head = [w for w in seed.split() if w != "ai"] or seed.split()
+        for letter in " abcdefghijklmnopqrstuvwxyz":
+            if asked:
+                time.sleep(SUGGEST_PAUSE)
+            asked += 1
+            try:
+                got = json.loads(get(SUGGEST + urllib.parse.quote(f"{seed} {letter}".strip())).decode("utf-8", "replace"))[1]
+            except (OSError, ValueError, IndexError):
+                failed += 1
+                continue
+            for q in got:
+                q = " ".join(str(q).lower().split())
+                if q != seed and q not in out and any(w in q.split() for w in head):
+                    out[q] = {"key": q, "name": q, "url": "", "about": "", "where": seed}
+    if asked and failed == asked:
+        raise OSError("Google autocomplete answered none of the requests")
+    return list(out.values()), 0
+
+
 FEEDS = {"producthunt": producthunt, "hn": show_hn, "openrouter": openrouter, "civitai": civitai, "appstore": appstore,
-         "awesome": awesome, "google_new": google_new, "trending": trending, "rising": rising}
+         "awesome": awesome, "google_new": google_new, "trending": trending, "rising": rising, "suggest": suggest}
 
 
 def feeds(cfg: dict, state: Path, today: date | None = None, weekly: bool = False) -> dict:

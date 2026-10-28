@@ -35,8 +35,8 @@
   "review": {"after_days": 14, "per_day": 5},
   "usecases": {"per_day": 5, "model": "claude-sonnet-4-6", "benchmark": "gpts", "min_volume": 50, "min_daily": 300, "related": true, "related_geo": "US", "country_trends": true, "country_min_volume": 1000, "country_max": 8},
 
-  "feeds": {"enabled": ["producthunt", "appstore", "google_new", "trending", "rising"],
-            "weekly": ["google_new", "rising"], "weekday": 0, "max_per_feed": 10,
+  "feeds": {"enabled": ["producthunt", "appstore", "google_new", "trending", "suggest"],
+            "weekly": ["google_new"], "weekday": 0, "max_per_feed": 10,
             "app_genres": [6008, 6016],
             "google_new": ["theresanaiforthat.com/ai/"],
             "trending": ["tiktok", "tiktok_tags", "douyin", "reddit"],

@@ -1538,6 +1538,32 @@ def test_weekly_feeds_wait_for_their_day(cfg, tmp_path, monkeypatch):
     assert feeds.feeds(cfg, tmp_path, today=date(2026, 10, 14), weekly=True)["read"]["rising"] == len(cfg["feeds"]["seeds"])
 
 
+def test_suggest_reports_autocomplete_new_since_yesterday(cfg, tmp_path, monkeypatch):
+    cfg["feeds"]["enabled"], cfg["feeds"]["weekly"], cfg["feeds"]["seeds"] = ["suggest"], [], ["ai christmas photo"]
+    monkeypatch.setattr(feeds, "SUGGEST_PAUSE", 0)
+    answers = {"ai christmas photo": ["ai christmas photo", "ai christmas photo generator", "best pizza near me"]}
+
+    def get(url):
+        q = feeds.urllib.parse.unquote(url.split("q=")[1])
+        return json.dumps([q, answers.get(q, [])]).encode()
+    monkeypatch.setattr(feeds, "get", get)
+    first = feeds.feeds(cfg, tmp_path, today=date(2026, 10, 14))
+    assert first["first_run"] == ["suggest"] and first["terms"] == [] and first["read"]["suggest"] == 1
+    answers["ai christmas photo t"] = ["ai christmas photo trend"]
+    again = feeds.feeds(cfg, tmp_path, today=date(2026, 10, 15))
+    assert [x["term"] for x in again["terms"]] == ["ai christmas photo trend"] and again["cost_micros"] == 0
+
+
+def test_suggest_fails_only_when_google_answers_nothing(cfg, tmp_path, monkeypatch):
+    cfg["feeds"]["enabled"], cfg["feeds"]["weekly"], cfg["feeds"]["seeds"] = ["suggest"], [], ["ai photo"]
+    monkeypatch.setattr(feeds, "SUGGEST_PAUSE", 0)
+
+    def down(url):
+        raise OSError("429")
+    monkeypatch.setattr(feeds, "get", down)
+    assert feeds.feeds(cfg, tmp_path, today=date(2026, 10, 14))["errors"][0].startswith("suggest:")
+
+
 def test_money_finds_the_owners_other_sites_and_new_advertisers(cfg, tmp_path, monkeypatch):
     cfg["money"]["ad_terms"] = ["ai headshot"]
     monkeypatch.setattr(money.goanyapi, "key", lambda: "k")
