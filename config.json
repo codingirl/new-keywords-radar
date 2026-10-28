@@ -1,0 +1,49 @@
+{
+  "lang": "zh",
+
+  "x_accounts": {
+    "labs": ["GoogleDeepMind", "GeminiApp", "OpenAI", "bfl_ml", "ideogram_ai", "midjourney", "krea_ai", "higgsfield_ai",
+             "dreamina_ai", "Alibaba_Qwen", "Kling_ai", "capcutapp"],
+    "bloggers": ["minchoi", "javilopen", "dotey", "op7418", "_akhaliq"]
+  },
+
+  "sitemaps": {
+    "photoai":    {"index": "https://photoai.com/sitemap.xml", "paths": "photoai\\.com/(ideas/[^/@]+|(?!@|photos\\b|compare\\b|faq\\b|alternatives\\b)[^/]+)$", "pause": 3},
+    "effectreel": {"index": "https://effectreel.com/sitemap.xml", "pause": 2},
+    "vidu":       {"index": "https://www.vidu.com/sitemap.xml", "paths": "vidu\\.com/ai-templates/", "pause": 3, "strip_locale": true}
+  },
+
+  "topics": {
+    "AI photo styles": "photo|selfie|portrait|headshot|photoshoot|booth|filter|aesthetic|film|kodak|polaroid|digicam|\\bccd\\b|disposable|flash|vintage|retro|y2k|\\b90s\\b|\\b80s\\b|yearbook|christmas|xmas|holiday|santa|new year|thanksgiving|winter|snow|hairstyle|makeup|outfit|nano banana|seedream|flux|gpt-image|midjourney"
+  },
+
+  "known_terms": [],
+  "stop_words": [],
+
+  "judge": {"model": "gpt-4.1-mini", "min_score": 0.5},
+  "new_sites": {"queries": {"photo": "%photo%", "booth": "%booth%", "filter": "%filter%"}, "weekday": 0, "words": 10},
+  "revenue": {"weekday": 0, "pages_growth": 3, "pages_new": 3, "min_revenue_usd": 500, "category": "", "max_leads": 10},
+  "competition": {"max_rows": 8, "weak_dr": 30, "location_code": 2840, "page_age": true},
+  "word_age": {"enabled": true, "time_range": "past_5_years", "new_days": 180},
+  "markets": {"enabled": true, "codes": ["US", "GB", "CA", "AU"], "difficulty": true, "top_region": true, "locations": {}},
+  "serp_shape": {"enabled": true, "location_code": 2840, "language_code": "en", "device": "desktop",
+                 "platforms": ["tiktok.com", "instagram.com", "pinterest.com", "youtube.com", "apps.apple.com", "play.google.com",
+                               "canva.com", "picsart.com", "capcut.com", "reddit.com", "medium.com"]},
+  "yours": {"enabled": true, "domains": [], "days": 28},
+  "year_curve": {"enabled": true},
+  "dot_com": {"enabled": true, "max_rows": 8},
+  "review": {"after_days": 14, "per_day": 5},
+  "usecases": {"per_day": 5, "model": "claude-sonnet-4-6", "benchmark": "gpts", "min_volume": 50, "min_daily": 300, "related": true, "related_geo": "US", "country_trends": true, "country_min_volume": 1000, "country_max": 8},
+
+  "feeds": {"enabled": ["producthunt", "appstore", "google_new", "trending", "suggest"],
+            "weekly": ["google_new"], "weekday": 0, "max_per_feed": 10,
+            "app_genres": [6008, 6016],
+            "google_new": ["theresanaiforthat.com/ai/"],
+            "trending": ["tiktok", "tiktok_tags", "douyin", "reddit"],
+            "seeds": ["ai photo", "ai photoshoot", "ai filter", "photo booth", "aesthetic photo", "film filter",
+                      "ai christmas photo", "christmas photoshoot", "ai yearbook", "ai headshot"]},
+  "money": {"weekday": 0, "portfolio_sites": 12, "max_dr": 60, "max_sisters": 30,
+            "ad_terms": ["ai christmas photos", "ai photoshoot", "ai photo editor", "ai photo filter", "ai headshot generator", "photo booth app"]},
+
+  "gsc": {}
+}

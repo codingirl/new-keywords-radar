@@ -148,6 +148,17 @@ def test_sitemap_diff_reports_a_word_new_urls_share(cfg, tmp_path, monkeypatch):
     assert second["sites"]["site"]["new"] == 3 and second["terms"][0]["term"] == "hyperframes"
 
 
+def test_sitemap_paths_keep_only_the_entries(cfg, tmp_path, monkeypatch):
+    cfg["sitemaps"] = {"site": {"index": "https://example.com/sitemap.xml", "pause": 0, "paths": r"/ai-templates/"}}
+    old = {f"https://example.com/ai-templates/thing-{i}" for i in range(40)}
+    posts = {f"https://example.com/feed-detail/{i}" for i in range(5)}
+    answers = iter([old, old | posts | {"https://example.com/ai-templates/cakeify"}])
+    monkeypatch.setattr(sitemaps, "site_urls", lambda *a: next(answers))
+    sitemaps.diff(cfg, tmp_path)
+    second = sitemaps.diff(cfg, tmp_path)["sites"]["site"]
+    assert second["new"] == 1 and second["sample"] == ["https://example.com/ai-templates/cakeify"]
+
+
 def test_a_site_that_fails_keeps_its_snapshot(cfg, tmp_path, monkeypatch):
     cfg["sitemaps"] = {"site": {"index": "https://example.com/sitemap.xml", "pause": 0}}
     monkeypatch.setattr(sitemaps, "site_urls", lambda *a: {"https://example.com/a"})
@@ -1525,6 +1536,32 @@ def test_weekly_feeds_wait_for_their_day(cfg, tmp_path, monkeypatch):
     monkeypatch.setattr(feeds.goanyapi, "related_queries", lambda seed: (asked.append(seed) or {"rising": [f"{seed} free"]}, 6000))
     assert feeds.feeds(cfg, tmp_path, today=date(2026, 10, 14))["read"] == {} and asked == []          # a Wednesday
     assert feeds.feeds(cfg, tmp_path, today=date(2026, 10, 14), weekly=True)["read"]["rising"] == len(cfg["feeds"]["seeds"])
+
+
+def test_suggest_reports_autocomplete_new_since_yesterday(cfg, tmp_path, monkeypatch):
+    cfg["feeds"]["enabled"], cfg["feeds"]["weekly"], cfg["feeds"]["seeds"] = ["suggest"], [], ["ai christmas photo"]
+    monkeypatch.setattr(feeds, "SUGGEST_PAUSE", 0)
+    answers = {"ai christmas photo": ["ai christmas photo", "ai christmas photo generator", "best pizza near me"]}
+
+    def get(url):
+        q = feeds.urllib.parse.unquote(url.split("q=")[1])
+        return json.dumps([q, answers.get(q, [])]).encode()
+    monkeypatch.setattr(feeds, "get", get)
+    first = feeds.feeds(cfg, tmp_path, today=date(2026, 10, 14))
+    assert first["first_run"] == ["suggest"] and first["terms"] == [] and first["read"]["suggest"] == 1
+    answers["ai christmas photo t"] = ["ai christmas photo trend"]
+    again = feeds.feeds(cfg, tmp_path, today=date(2026, 10, 15))
+    assert [x["term"] for x in again["terms"]] == ["ai christmas photo trend"] and again["cost_micros"] == 0
+
+
+def test_suggest_fails_only_when_google_answers_nothing(cfg, tmp_path, monkeypatch):
+    cfg["feeds"]["enabled"], cfg["feeds"]["weekly"], cfg["feeds"]["seeds"] = ["suggest"], [], ["ai photo"]
+    monkeypatch.setattr(feeds, "SUGGEST_PAUSE", 0)
+
+    def down(url):
+        raise OSError("429")
+    monkeypatch.setattr(feeds, "get", down)
+    assert feeds.feeds(cfg, tmp_path, today=date(2026, 10, 14))["errors"][0].startswith("suggest:")
 
 
 def test_money_finds_the_owners_other_sites_and_new_advertisers(cfg, tmp_path, monkeypatch):
