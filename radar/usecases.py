@@ -556,7 +556,10 @@ def run(cfg: dict, state: Path, names: list[str], repos: dict[str, str], today: 
             "cost_micros": cost + c0 + c2 + c3 + c4 + c5 + c6 + c7 + c8}
 
 
-READ_KINDS = {"x", "hf", "breakout", "newsite", "revenue", "seller"}
+READ_KINDS = {"x", "hf", "breakout", "newsite", "revenue", "seller", "feed"}
+# ⑨ feeds list apps and products ("Movia AI: Photo to Video Maker") but also searches
+# ("ai generator image to video free"): a lead only they found is read when the judge scored it a name
+SCORED_ONLY = {"feed"}
 READ_MIN = 0.8
 
 
@@ -565,11 +568,13 @@ def names_to_read(leads_today: list[dict], recent_sources: list[dict]) -> list[s
     not a word that surged. Terms that only the word-count signals found (new sitemap URLs,
     repos sharing a word) are words like "mcd" and "context protocol", or URL fragments
     like "kr.co.klisten.api": our first live run read five of those. A lead
-    needs a signal that reports things and a name score of READ_MIN; unscored leads pass."""
+    needs a signal that reports things and a name score of READ_MIN; unscored leads pass,
+    unless only a feed found them."""
     out = []
     for r in [*leads_today, *recent_sources]:
-        named = r.get("named")
-        if READ_KINDS & set(r.get("kinds", [])) and (named is None or named >= READ_MIN) and r["term"] not in out:
+        named, kinds = r.get("named"), READ_KINDS & set(r.get("kinds", []))
+        scored = named >= READ_MIN if named is not None else bool(kinds - SCORED_ONLY)
+        if kinds and scored and r["term"] not in out:
             out.append(r["term"])
     return out
 
