@@ -1,0 +1,46 @@
+{
+  "lang": "zh",
+
+  "x_accounts": {
+    "labs": ["Kling_ai", "PixVerse_", "ViduAI_official", "Hailuo_AI", "higgsfield_ai", "dreamina_ai", "Alibaba_Wan",
+             "runwayml", "pika_labs", "LumaLabsAI", "krea_ai", "midjourney", "OpenAI", "GoogleDeepMind", "capcutapp"],
+    "bloggers": ["minchoi", "javilopen", "_akhaliq", "op7418", "rowancheung"]
+  },
+
+  "sitemaps": {
+    "effectreel": {"index": "https://effectreel.com/sitemap.xml", "pause": 2},
+    "vidu":       {"index": "https://www.vidu.com/sitemap.xml", "paths": "vidu\\.com/(ai-templates|tools)/", "pause": 3, "strip_locale": true}
+  },
+
+  "topics": {
+    "AI video effects": "\\bvideos?\\b|effect|filter|template|\\btrend|dance|hug|squish|inflate|melt|cakeify|ghibli|figurine|photo to video|image to video|animat|avatar|lip ?sync|kling|hailuo|vidu|pixverse|seedance|\\bveo\\b|\\bsora\\b"
+  },
+
+  "known_terms": [],
+  "stop_words": [],
+
+  "judge": {"model": "gpt-4.1-mini", "min_score": 0.5},
+  "new_sites": {"queries": {"video": "%video%", "effect": "%effect%"}, "weekday": 0, "words": 10},
+  "revenue": {"weekday": 0, "pages_growth": 3, "pages_new": 3, "min_revenue_usd": 500, "category": "", "max_leads": 10},
+  "competition": {"max_rows": 8, "weak_dr": 30, "location_code": 2840, "page_age": true},
+  "word_age": {"enabled": true, "time_range": "past_5_years", "new_days": 180},
+  "markets": {"enabled": true, "codes": ["US", "GB", "CA", "AU"], "difficulty": true, "top_region": true, "locations": {}},
+  "serp_shape": {"enabled": true, "location_code": 2840, "language_code": "en", "device": "desktop",
+                 "platforms": ["tiktok.com", "instagram.com", "youtube.com", "capcut.com", "reddit.com", "medium.com", "github.com", "wikipedia.org"]},
+  "yours": {"enabled": true, "domains": [], "days": 28},
+  "year_curve": {"enabled": true},
+  "dot_com": {"enabled": true, "max_rows": 8},
+  "review": {"after_days": 14, "per_day": 5},
+  "usecases": {"per_day": 5, "model": "claude-sonnet-4-6", "benchmark": "gpts", "min_volume": 50, "min_daily": 300, "related": true, "related_geo": "US", "country_trends": true, "country_min_volume": 1000, "country_max": 8},
+
+  "feeds": {"enabled": ["producthunt", "appstore", "google_new", "trending", "rising"],
+            "weekly": ["google_new", "rising"], "weekday": 0, "max_per_feed": 10,
+            "app_genres": [6008, 6016],
+            "google_new": ["theresanaiforthat.com/ai/"],
+            "trending": ["tiktok", "tiktok_tags", "douyin", "reddit"],
+            "seeds": ["ai effect", "ai filter", "ai trend", "ai video generator", "ai generator", "photo to video ai", "ai dance", "ai hug"]},
+  "money": {"weekday": 0, "portfolio_sites": 12, "max_dr": 60, "max_sisters": 30,
+            "ad_terms": ["ai video effects", "photo to video ai", "ai dance generator", "ai hug video", "ai video generator"]},
+
+  "gsc": {}
+}

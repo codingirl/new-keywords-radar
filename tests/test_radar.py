@@ -148,6 +148,17 @@ def test_sitemap_diff_reports_a_word_new_urls_share(cfg, tmp_path, monkeypatch):
     assert second["sites"]["site"]["new"] == 3 and second["terms"][0]["term"] == "hyperframes"
 
 
+def test_sitemap_paths_keep_only_the_entries(cfg, tmp_path, monkeypatch):
+    cfg["sitemaps"] = {"site": {"index": "https://example.com/sitemap.xml", "pause": 0, "paths": r"/ai-templates/"}}
+    old = {f"https://example.com/ai-templates/thing-{i}" for i in range(40)}
+    posts = {f"https://example.com/feed-detail/{i}" for i in range(5)}
+    answers = iter([old, old | posts | {"https://example.com/ai-templates/cakeify"}])
+    monkeypatch.setattr(sitemaps, "site_urls", lambda *a: next(answers))
+    sitemaps.diff(cfg, tmp_path)
+    second = sitemaps.diff(cfg, tmp_path)["sites"]["site"]
+    assert second["new"] == 1 and second["sample"] == ["https://example.com/ai-templates/cakeify"]
+
+
 def test_a_site_that_fails_keeps_its_snapshot(cfg, tmp_path, monkeypatch):
     cfg["sitemaps"] = {"site": {"index": "https://example.com/sitemap.xml", "pause": 0}}
     monkeypatch.setattr(sitemaps, "site_urls", lambda *a: {"https://example.com/a"})

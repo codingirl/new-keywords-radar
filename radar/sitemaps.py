@@ -12,7 +12,9 @@ share, and that the site's older URLs rarely carried, is a surge.
 `index` is a sitemap index when `shards` (a regex) picks the sub-sitemaps to read, or a
 plain sitemap when `shards` is left out. `pause` is the seconds between requests to that
 site: keep each site's robots.txt and crawl-delay. `strip_locale` drops a leading
-/en/ or /zh-CN/ so one new entry in 17 languages counts once.
+/en/ or /zh-CN/ so one new entry in 17 languages counts once. `paths` (a regex) keeps only
+the URLs it matches, for a site whose sitemap also lists pages that are not entries (a
+video site's users' posts beside its templates).
 
 A site that fails is skipped for the day and keeps its snapshot, since the URLs it
 lacks would come back tomorrow as "new".
@@ -88,6 +90,8 @@ def diff(cfg: dict, state: Path) -> dict:
             if i:
                 time.sleep(pause)   # several entries can point at one host
             now = site_urls(s["index"], s.get("shards"), pause, bool(s.get("strip_locale")))
+            if s.get("paths"):
+                now = {u for u in now if re.search(s["paths"], u)}
         except Exception as exc:  # noqa: BLE001 — one site down must not stop the others
             report[site] = {"error": str(exc)[:120]}
             continue
