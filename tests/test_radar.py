@@ -829,6 +829,13 @@ def test_only_things_are_read_for_generic_terms_not_words_that_surged():
     assert usecases.names_to_read(today, recent) == ["photocraft", "hailuo", "qwen image 2.1"]
 
 
+def test_feed_names_are_read_only_when_scored_names():
+    today = [{"term": "movia ai: photo to video maker", "kinds": ["feed"], "named": 0.9},
+             {"term": "ai generator image to video free", "kinds": ["feed"], "named": 0.2},
+             {"term": "dancehit", "kinds": ["feed"]}, {"term": "boothie", "kinds": ["feed", "revenue"]}]
+    assert usecases.names_to_read(today, []) == ["movia ai: photo to video maker", "boothie"]
+
+
 def test_a_failed_post_search_costs_one_name_its_posts_not_the_step(monkeypatch):
     def call(calls):
         if "photocraft" in calls[0]["arguments"]["query"]:
