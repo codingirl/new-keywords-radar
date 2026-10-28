@@ -41,7 +41,7 @@
             "weekly": ["google_new", "rising"], "weekday": 0, "max_per_feed": 10,
             "app_genres": [6008, 6016],
             "google_new": ["theresanaiforthat.com/ai/"],
-            "trending": ["tiktok", "tiktok_tags", "douyin", "reddit"],
+            "trending": ["tiktok", "douyin", "reddit"],
             "seeds": ["ai effect", "ai trend", "ai video generator", "ai generator", "photo to video ai", "ai dance", "ai hug",
                       "ai photo", "ai photoshoot", "ai filter", "photo booth", "aesthetic photo", "film filter",
                       "ai christmas photo", "christmas photoshoot", "ai yearbook", "ai headshot"]},
